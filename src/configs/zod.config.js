@@ -4,7 +4,7 @@ export const SignInSchema = z.object({
   email: z.string().email("Yêu cầu là email. Ví dụ: example@gmail.com").min(1, "Yêu cầu là email. Ví dụ: example@gmail.com"),
   password: z.string()
     .min(1, "Nhập mật khẩu của bạn")
-    .min(3, "Mật khẩu phải có nhiều hơn 3 ký tự")
+    .min(6, "Mật khẩu phải có nhiều hơn 6 ký tự")
 });
 
 
@@ -18,10 +18,10 @@ export const SignUpSchema = z
     username:z.string().min(3, "Username tối hiểu 3 ký tự").regex(usernameRegex, "Kiểm tra lại username"),
     first_name: z.string().min(1, { message: "Nhập họ của bạn" }),
     last_name: z.string().min(1, { message: "Nhập tên của bạn" }),
-    email: z.string().email("Yêu cầu là email. Ví dụ: example@gmail.com").min(1, "Yêu cầu là email. Ví dụ: example@gmail.com"),
+    email: z.string().email("Yêu cầu là email. Ví dụ: example@email.com").min(1, "Yêu cầu là email. Ví dụ: example@email.com"),
     password: z
       .string()
-      .min(3, { message: "Mật khẩu phải có nhiều hơn 3 ký tự" }),
+      .min(6, { message: "Mật khẩu phải có nhiều hơn 6 ký tự" }),
     confirmPassword: z
       .string()
       .min(1, { message: "Nhập lại mật khẩu" }),
@@ -69,10 +69,10 @@ export const ShippingSchema = z.object({
 export const ChangePasswordSchema = z.object({
   currentPassword: z.string()
     .min(1, "Nhập token của bạn để xác nhận")
-    .min(3, "Mã token phải có nhiều hơn 3 ký tự"),
+    .min(6, "Mã token phải có nhiều hơn 6 ký tự"),
   newPassword: z
     .string()
-    .min(3, { message: "Mật khẩu phải có nhiều hơn 3 ký tự" }),
+    .min(6, { message: "Mật khẩu phải có nhiều hơn 6 ký tự" }),
   confirmNewPassword: z
     .string()
     .min(1, { message: "Nhập lại mật khẩu" })

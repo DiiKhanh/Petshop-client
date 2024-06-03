@@ -1,74 +1,54 @@
 import ChatBot from "react-simple-chatbot";
 import "../styles/chatbot.css";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import checkoutApi from "~/apis/modules/checkout.api";
 import { useSelector } from "react-redux";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const OPENAI_API_KEY = "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";
 
-
-const ChatGPTResponse = (props) => {
+const ChatGeminiResponse = (props) => {
   const handleNext = () => {
     props.triggerNextStep();
   };
-  const [value, setValue] = useState(null);
 
-  // State to store chat messages
+  const [data, setData] = useState(undefined);
+  const [inputText, setInputText] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Function to handle user messages
+  async function fetchDataFromGeminiProAPI() {
+    try {
+      // ONLY TEXT
+      if (!inputText) {
+        alert("Please enter text!");
+        return;
+      }
+      setLoading(true);
+      const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-  // Function to send the user message to ChatGPT API
-  async function processUserMessageToChatGPT() {
-    // Prepare the messages in the required format for the API
-    //const apiMessage = { role: "assistant", content: props.previousStep.value };
-    // System message for ChatGPT
-
-    // const systemMessage = {
-    //   role: "system",
-    //   content: "Explain all concept like Website selling pets, and pet products"
-    // };
-
-    // Prepare the API request body
-    const apiRequestBody = {
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful assistant."
-        },
-        {
-          role: "user",
-          content: "Hello!"
-        }
-      ]
-    };
-
-    // Send the user message to ChatGPT API
-    await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + OPENAI_API_KEY,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(apiRequestBody)
-    })
-      .then((data) => {
-        return data.json();
-      })
-      .then((data) => {
-        // Update chat messages with ChatGPT's response
-        setValue(data.error.message);
-      });
+      const result = await model.generateContent(inputText);
+      const text = result.response.text();
+      console.log(text);
+      setLoading(false);
+      setData(text);
+    } catch (error) {
+      setLoading(false);
+      console.error("fetchDataFromGeminiAPI error: ", error);
+    }
   }
 
-  useEffect(() => {
-    processUserMessageToChatGPT();
-  }, []);
-
   return (
-    <Box>
-      <Typography>{value}</Typography>
+    <Box width={"100%"}>
+      <TextField
+        type="text"
+        style={{ width: "100%" }}
+        value={inputText}
+        onChange={(e) => setInputText(e.target.value)}
+      />
+      <Typography>{data}</Typography>
+      <Button disabled={loading} onClick={() => fetchDataFromGeminiProAPI()}>
+        {loading ? "Loading..." : "Hỏi"}</Button>
       <Button onClick={() => handleNext()}>Bạn cần giúp đỡ những gì</Button>
     </Box>
   );
@@ -85,31 +65,31 @@ const ChatBotPage = () => {
       {
         id: "2",
         options: [
-          { value: 1, label: "Các giống chó của cửa hàng?", trigger: "3" },
+          { value: 1, label: "Các giống chó, mèo của cửa hàng?", trigger: "3" },
           { value: 2, label: "Giá giao động của các thú cưng?", trigger: "4" },
-          { value: 3, label: "Đồ cho chó như thế nào?", trigger: "5" },
+          { value: 3, label: "Đồ cho chó, mèo như thế nào?", trigger: "5" },
           { value: 4, label: "Phí giao hàng như thế nào?", trigger: "6" },
           { value: 5, label: "Tình trạng đơn hàng của tôi?", trigger: "8" },
           {
             value: 6,
             label: "Tôi muốn hỏi thêm chi tiết",
-            trigger: "search"
+            trigger: "7"
           }
         ]
       },
       {
         id: "3",
-        message: "Bên mình cung cấp các giống như: Corgi, Poodle, Husky, Golden,... và nhiều giống khác bạn có thể xem ở danh mục chó cảnh",
+        message: "Bên mình cung cấp các giống như: Corgi, Poodle, Husky, Golden, Mèo Anh Lông ngắn... và nhiều giống khác bạn có thể xem ở danh mục chó cảnh",
         trigger: "2"
       },
       {
         id: "4",
-        message: "Bên mình cung cấp các chó cảnh có mức giá đa dạng từ 10 triệu đồng trở lên",
+        message: "Bên mình cung cấp các chó, mèo cảnh có mức giá đa dạng từ 1 triệu đồng trở lên",
         trigger: "2"
       },
       {
         id: "5",
-        message: "Bên mình chuyên cung cấp đồ dùng, thức ăn cho chó với sản phẩm chất lượng, uy tín, bạn có thể truy cập trang đồ cho chó để xem thêm",
+        message: "Bên mình chuyên cung cấp đồ dùng, thức ăn cho chó, mèo với sản phẩm chất lượng, uy tín, bạn có thể truy cập trang đồ cho chó để xem thêm",
         trigger: "2"
       },
       {
@@ -117,14 +97,14 @@ const ChatBotPage = () => {
         message: "Cửa hàng chúng tôi sẽ giao thú cưng cho bạn đến nới an toàn, thời gian từ 3 - 5 ngày và hoàn toàn miễn phí",
         trigger: "2"
       },
-      {
-        id: "search",
-        user: true,
-        trigger: "7"
-      },
+      // {
+      //   id: "search",
+      //   user: true,
+      //   trigger: "7"
+      // },
       {
         id: "7",
-        component: <ChatGPTResponse />,
+        component: <ChatGeminiResponse />,
         waitAction: true,
         trigger: "2"
       },

@@ -5,6 +5,7 @@ import { useState } from "react";
 import ListWaitPayment from "./ListWaitPayment";
 import ListWaitShip from "./ListWaitShip";
 import ListSuccess from "./ListSuccess";
+import { useGetList } from "~/hooks/query/usePurchased";
 
 
 function a11yProps(index) {
@@ -17,6 +18,7 @@ function a11yProps(index) {
 const PurchasedView = () => {
   const { user } = useSelector(state => state.user);
   const [value, setValue] = useState(0);
+  const data = useGetList(user);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -35,10 +37,15 @@ const PurchasedView = () => {
           <Tab label="Hoàn thành" {...a11yProps(3)} />
         </Tabs>
       </Box>
-      <ListPurchased user={user} value={value} index={0}/>
-      <ListWaitPayment user={user} value={value} index={1}/>
-      <ListWaitShip user={user} value={value} index={2}/>
-      <ListSuccess user={user} value={value} index={3}/>
+      {
+        data.isSuccess && data.data &&
+      <>
+        <ListPurchased user={user} value={value} index={0} listItem={data.data}/>
+        <ListWaitPayment user={user} value={value} index={1} listItem={data.data}/>
+        <ListWaitShip user={user} value={value} index={2} listItem={data.data}/>
+        <ListSuccess user={user} value={value} index={3} listItem={data.data}/>
+      </>
+      }
     </Stack>
   );
 };

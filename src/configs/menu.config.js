@@ -1,12 +1,9 @@
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import CategoryIcon from "@mui/icons-material/Category";
 import NorthEastIcon from "@mui/icons-material/NorthEast";
-import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
-import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import ReceiptIcon from "@mui/icons-material/Receipt";
-import BookOnlineIcon from "@mui/icons-material/BookOnline";
 import PetsIcon from "@mui/icons-material/Pets";
 
 const main = [
@@ -23,7 +20,13 @@ const main = [
     state: "dog"
   },
   {
-    display: "Đồ cho chó",
+    display: "Mèo cảnh",
+    path: "/cat",
+    icon: <CategoryIcon />,
+    state: "cat"
+  },
+  {
+    display: "Sản phẩm thú cưng",
     path: "/product",
     icon: <NorthEastIcon />,
     state: "product"
@@ -61,18 +64,6 @@ const user = [
     icon: <PetsIcon />,
     state: "Profile Pet"
   },
-  // {
-  //   display: "Đăng ký khám thú cưng",
-  //   path: "/booking",
-  //   icon: <BookOnlineIcon />,
-  //   state: "booking"
-  // },
-  // {
-  //   display: "password update",
-  //   path: "/password-update",
-  //   icon: <LockResetOutlinedIcon />,
-  //   state: "password.update"
-  // },
   {
     display: "Giỏ hàng",
     path: "/cart",

@@ -16,65 +16,67 @@ import Review from "../components/Review";
 import HeaderContainer from "../components/HeaderContainer";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import RecommendSlide from "../components/RecommendSlide";
-import itemApi from "../apis/modules/item.api";
+import dogApi from "../apis/modules/dog.api";
 import { toast } from "react-toastify";
 import Skeleton from "@mui/material/Skeleton";
 import Label from "../components/Label";
 import Rating from "@mui/material/Rating";
 import StarIcon from "@mui/icons-material/Star";
-import QuantityInput from "~/components/quantity/QuantityInput";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "~/redux/features/cartSlice";
 import { setModalContact } from "~/redux/features/globalLoadingSlice";
 import commentApi from "~/apis/modules/comment.api";
+import { useGetDogComment, useGetPet } from "~/hooks/query/useDog";
+import { Alert, CircularProgress } from "@mui/material";
 
-
-const ProductDetail = () => {
+const CatDetail = () => {
   const { id } = useParams();
-  const [animal, setAnimal] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [qty, setQty] = useState(1);
+  // const [animal, setAnimal] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
+  const data = useGetPet(id);
+  const dataReview = useGetDogComment(id);
+
+  // const getDogDetail = useCallback(async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const { response, err } = await dogApi.getDogDetail({ id });
+  //     if (response) {
+  //       setAnimal(response);
+  //     }
+  //     if (err) {
+  //       toast.error(err);
+  //     }
+  //   } catch (error) {
+  //     toast.error(error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [id]);
+
+  // const [reviews, setReviews]=useState([]);
+
+  // useEffect(() => {
+  //   getDogDetail();
+  //   const getReview = async () => {
+  //     try {
+  //       const { response, err } = await commentApi.getComment({ product_id: +id, type: "animal" });
+  //       if (err) toast.error(err);
+  //       if (response) {
+  //         setReviews(response);
+  //       }
+  //     } catch (error) {
+  //       toast.error("Có lỗi khi lấy bình luận!");
+  //     }
+  //   };
+  //   getReview();
+  // }, [getDogDetail, id]);
+
+  const dispatch = useDispatch();
   const { user } = useSelector(state => state.user);
   const { cartItems } = useSelector(state => state.cart);
-  const dispatch = useDispatch();
-
-  const getDogDetail = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const { response, err } = await itemApi.getItemDetail({ id });
-      if (response) {
-        setAnimal(response);
-      }
-      if (err) {
-        toast.error(err);
-      }
-    } catch (error) {
-      toast.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [id]);
-
-  const [reviews, setReviews] = useState([]);
-
-  useEffect(() => {
-    getDogDetail();
-    const getReview = async () => {
-      try {
-        const { response, err } = await commentApi.getComment({ product_id: +id, type: "product" });
-        if (err) toast.error(err);
-        if (response) {
-          setReviews(response);
-        }
-      } catch (error) {
-        toast.error("Có lỗi khi lấy bình luận!");
-      }
-    };
-    getReview();
-  }, [getDogDetail, id]);
-
-
-  const exist = cartItems?.find(item => item.id === +id && item.type === "product");
+  function findProductByIdAndType(productsArray, id, type) {
+    return productsArray?.find(product => product.id === +id && product.type === type);
+  }
 
   const addToCart = (e) => {
     e.preventDefault();
@@ -82,18 +84,26 @@ const ProductDetail = () => {
       toast.error("Bạn phải đăng nhập để thực hiện chức năng này!");
     }
     else {
-      if (qty > exist?.stock - exist?.quantity) {
-        toast.error("Sản phẩm vượt quá số lượng đang có!");
+      const exist = findProductByIdAndType(cartItems, id, "animal");
+      if (exist) {
+        toast.error("Sản phẩm đã có trong giỏ hàng");
         return;
       }
+      // dispatch(addItem({
+      //   id: animal?.dogItemId,
+      //   quantity: 1,
+      //   price: animal?.price,
+      //   images: animal?.images,
+      //   dogName: animal?.dogName,
+      //   type: "animal"
+      // }));
       dispatch(addItem({
-        id: animal?.dogProductItemId,
-        quantity: qty,
-        price: animal?.price,
-        images: animal?.images,
-        itemName: animal?.itemName,
-        type: "product",
-        stock: animal?.quantity
+        id: data?.data?.dogItemId,
+        quantity: 1,
+        price: data?.data.price,
+        images: data?.data.images,
+        dogName: data?.data.dogName,
+        type: "animal"
       }));
       toast.success("Thêm vào giỏ hàng thành công!");
     }
@@ -101,21 +111,34 @@ const ProductDetail = () => {
 
 
   return (
-    <Helmet title={`${animal?.itemName}`}>
-      <SectionBanner title={"Đồ cho thú cưng"} />
+    <>
+      {
+        data?.isLoading && <Box sx={{ display: "flex", alignItems:"center", justifyContent:"center", mt:"200px" }}>
+          <CircularProgress size={100}/>
+        </Box>
+      }
+      {
+        data.error instanceof Error && <Box sx={{ marginTop: 2 }}>
+          <Alert severity="error" variant="outlined" >{data.error.message}</Alert>
+        </Box>
+      }
+      {
+        data.isSuccess && data?.data &&
+    <Helmet title={`${data?.data.dogName}`}>
+      <SectionBanner title={"Chó cảnh"} />
       <Container maxWidth="xl" sx={{ marginBottom: "50px" }}>
         <Stack direction={ { xs: "column", md:"row" }} spacing={2} marginTop={10}>
           {/* gallery slide */}
           <Box width={{ xs:"100%", md:"50%" }}>
             {
-              isLoading ? <Skeleton variant="rectangular" width="100%" /> : <ThumbsGallery image={animal?.images}/>
+              data.isLoading ? <Skeleton variant="rectangular" width="100%" /> : <ThumbsGallery image={data?.data.images}/>
             }
           </Box>
           {/* gallery slide */}
           {/* info */}
           <Box width={{ xs:"100%", md:"50%" }}>
             {
-              isLoading && <Skeleton variant="rectangular" width="100%" />
+              data.isLoading && <Skeleton variant="rectangular" width="100%" />
             }
             <Stack flexDirection="column" spacing={1} marginLeft={2}>
               <Breadcrumbs aria-label="breadcrumb" sx={{ textTransform:"uppercase" }}>
@@ -125,34 +148,54 @@ const ProductDetail = () => {
                 <Link
                   underline="hover"
                   color="inherit"
-                  href="/product"
+                  href="/dog"
                 >
-                Đồ cho thú cưng
+                Giống chó
                 </Link>
-                <Typography color="text.primary">{animal?.itemName}</Typography>
+                <Typography color="text.primary">{data?.data.dogName}</Typography>
               </Breadcrumbs>
               <Typography variant="h4" maxWidth={400} textTransform="capitalize" fontWeight="bold" lineHeight="40px">
-                {`${animal?.itemName} ${animal?.dogProductItemId}`}
+                {`${data?.data.dogName} ${data?.data.dogItemId}`}
               </Typography>
               <Typography component="p" color="primary.price" fontSize="21px" fontWeight="bold">
-                {valueLabelFormat(animal?.price)}
+                {valueLabelFormat(data?.data.price)}
               </Typography>
               <Divider sx={{ maxWidth:"400px" }}/>
-              <Stack direction="column" spacing={2} textTransform="capitalize" alignItems="flex-start">
+              <Stack direction="column" spacing={2} textTransform="capitalize">
                 <Typography component="p" fontWeight="bold" fontSize="20px"
-                >Loại:{" "}
-                  <Typography component="span">{animal?.category}</Typography>
+                >Giống:{" "}
+                  <Typography component="span">{data?.data.dogSpeciesName}</Typography>
+                </Typography>
+                <Typography component="p" fontWeight="bold" fontSize="20px"
+                >Màu:{" "}
+                  <Typography component="span">{data?.data.color}</Typography>
+                </Typography>
+                <Typography component="p" fontWeight="bold" fontSize="20px"
+                >Tuổi:{" "}
+                  <Typography component="span">{data?.data.age}{" tháng"}</Typography>
+                </Typography>
+                <Typography component="p" fontWeight="bold" fontSize="20px"
+                >Giới tính:{" "}
+                  <Typography component="span">{data?.data.sex === "male" ? "Đực" : "Cái"}</Typography>
+                </Typography>
+                <Typography component="p" fontWeight="bold" fontSize="20px"
+                >Sức khỏe:{" "}
+                  <Typography component="span">{data?.data.healthStatus}</Typography>
+                </Typography>
+                <Typography component="p" fontWeight="bold" fontSize="20px"
+                >Nguồn gốc:{" "}
+                  <Typography component="span">{data?.data.origin}</Typography>
                 </Typography>
                 <Typography component="p" fontWeight="bold" fontSize="20px"
                 >Tình trạng:{" "}
                   <Label
                     variant="filled"
-                    color={(animal?.isInStock === false && "error") || "info"}
+                    color={"info"}
                     sx={{
                       textTransform: "uppercase"
                     }}
                   >
-                    {animal?.isInStock ? "Còn hàng" : "Hết hàng"}
+                  Có sẵn
                   </Label>
                 </Typography>
                 <Box
@@ -171,16 +214,10 @@ const ProductDetail = () => {
                   />
                   <Box sx={{ ml: 2 }}>Yêu thích</Box>
                 </Box>
-                <Box>
-                  <QuantityInput max={animal?.quantity} setQty={setQty} qty={qty}/>
-                </Box>
-                <Typography
-                  fontSize="15px" fontWeight="300"
-                >{animal?.quantity} sản phẩm có sẵn</Typography>
               </Stack>
               <Box marginTop="40px !important">
                 {
-                  animal?.isInStock ? <Button variant="contained" size="large"
+                  data?.data.isInStock ? <Button variant="contained" size="large"
                     onClick={addToCart}
                   >
                   Thêm vào giỏ hàng
@@ -203,20 +240,27 @@ const ProductDetail = () => {
           <Divider />
           <Typography marginTop={2} lineHeight={2}>
             {
-              animal?.description
+              data?.data?.description
             }
           </Typography>
         </Box>
         {/* des */}
         {/* review */}
-        <Review reviews={reviews}/>
+        {
+          dataReview?.data &&
+        <Review reviews={dataReview?.data} />
+        }
         {/* review */}
         <HeaderContainer header="Có thể bạn thích" icon={<ThumbUpIcon />}>
-          <RecommendSlide type={"product"} />
+          <RecommendSlide type="dog" />
         </HeaderContainer>
       </Container>
     </Helmet>
+      }
+    </>
+
   );
+
 };
 
-export default ProductDetail;
+export default CatDetail;

@@ -4,8 +4,10 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { useNavigate } from "react-router-dom";
 
-const BredItem = ({ item }) => {
+const BredItem = ({ item, type }) => {
+  const navigate = useNavigate();
   return (
     <Card sx={{ maxWidth: 345,
       transition: "all 0.2s linear",
@@ -40,6 +42,7 @@ const BredItem = ({ item }) => {
           variant="contained"
           size="large"
           sx={{ width: "max-content" }}
+          onClick={() => navigate(`/${type}`)}
         >
           Xem thêm
         </Button>

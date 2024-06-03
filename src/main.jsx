@@ -4,9 +4,13 @@ import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/s
 import theme from "./configs/theme.config.js";
 import { BrowserRouter } from "react-router-dom";
 import { Suspense } from "react";
-import { store, persistor } from "./redux/store.js";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { store, persistor } from "./redux/store.js";
+
+const queryClient = new QueryClient();
+
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
@@ -14,7 +18,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <CssVarsProvider theme={theme}>
           <Suspense>
-            <App />
+            <QueryClientProvider client={queryClient} >
+              <App />
+            </QueryClientProvider >
           </Suspense>
         </CssVarsProvider>
       </BrowserRouter>

@@ -1,15 +1,15 @@
 import publicClient from "../client/public.client";
 
 const endpoints = {
-  getAll: "DogItems/get-all",
+  getAll: ({ type }) => `DogItems/get-all/${type}`,
   getDetail: ({ id }) => `DogItems/get-dog/${id}`
 };
 
 const dogApi = {
-  getAll: async () => {
+  getAll: async ({ type }) => {
     try {
       const response = await publicClient.get(
-        endpoints.getAll
+        endpoints.getAll({ type })
       );
       return { response };
     } catch (err) {

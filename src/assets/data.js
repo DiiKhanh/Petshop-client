@@ -80,15 +80,24 @@ export const bred = {
       category: "scottish",
       short_des: "Thân hình mũm mĩm, thân thiện"
     }
+  ],
+  products: [
+    {
+      name: "Thức ăn cho chó",
+      image: "https://dogily.vn/wp-content/uploads/2021/12/royal-canin-poodle-adult-5-400x400.jpg",
+      category: "product_dog",
+      short_des: "Chất lượng, nhập khẩu"
+    },
+    {
+      name: "Balo",
+      image: "https://matpetfamily.com/wp-content/uploads/2021/05/kiotviet_fcd269b4282bd1571314b27547239f79.jpg",
+      category: "product_dog",
+      short_des: "Hoàn thiện, chất lượng"
+    }
   ]
 };
 
 export const products = [
-  {
-    name: "đồ cho chó",
-    image: "https://dogily.vn/wp-content/uploads/2021/11/cho-samoyed-con-mau-trang-2-thang-tuoi-7-400x400.jpg",
-    category: "product_dog"
-  },
   {
     name: "thức ăn cho chó",
     image: "https://dogily.vn/wp-content/uploads/2021/12/royal-canin-poodle-adult-5-400x400.jpg",
@@ -110,9 +119,19 @@ export const products = [
     category: "product_dog"
   },
   {
-    name: "sữa tắm cho chó",
-    image: "https://dogily.vn/wp-content/uploads/2023/06/SUA-TAM-SOS-CHO-CHO-LONG-TRANG-2-400x400.jpg",
-    category: "product_dog"
+    name: "pate cho mèo",
+    image: "https://matpetfamily.com/wp-content/uploads/2020/06/kiotviet_1c3ec5d3a4813b2e9a44d00688244ca5.jpeg",
+    category: "product_cat"
+  },
+  {
+    name: "cát vệ sinh",
+    image: "https://matpetfamily.com/wp-content/uploads/2023/03/3622cc7a7d204a6da194fb6a50b8cfc4_tplv-o3syd03w52-origin-jpeg.jpeg",
+    category: "product_cat"
+  },
+  {
+    name: "balo",
+    image: "https://matpetfamily.com/wp-content/uploads/2021/05/kiotviet_fcd269b4282bd1571314b27547239f79.jpg",
+    category: "product_cat"
   }
 ];
 
@@ -156,6 +175,37 @@ export const categories = [
   {
     name: "Chó Shiba",
     category: "Shiba"
+  }
+];
+
+export const categories1 = [
+  {
+    name: "Mèo Siamese",
+    category: "Siamese"
+  },
+  {
+    name: "Mèo Maine Coon",
+    category: "Maine_Coon"
+  },
+  {
+    name: "Mèo Persian",
+    category: "Persian"
+  },
+  {
+    name: "Mèo Bengal",
+    category: "Bengal"
+  },
+  {
+    name: "Mèo Sphynx",
+    category: "Sphynx"
+  },
+  {
+    name: "Mèo Munchkin",
+    category: "Munchkin"
+  },
+  {
+    name: "Mèo Scottish Fold",
+    category: "Scottish_Fold"
   }
 ];
 

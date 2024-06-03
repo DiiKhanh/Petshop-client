@@ -4,27 +4,27 @@ import CardItem from "./CardItem";
 import { toast } from "react-toastify";
 import checkoutApi from "~/apis/modules/checkout.api";
 
-const ListWaitPayment = ({ user, value, index, ...other }) => {
-  const [listItem, setListItem] = useState([]);
+const ListWaitPayment = ({ user, value, index, listItem, ...other }) => {
+  // const [listItem, setListItem] = useState([]);
 
-  useEffect(() => {
-    const get = async () => {
-      try {
-        const { response, err } = await checkoutApi.getList({ user_id:user.id });
-        if (err) {
-          toast.error(err);
-        }
-        if (response) {
-          setListItem(response);
-        }
-      } catch (error) {
-        toast.error(error);
-      }
-    };
+  // useEffect(() => {
+  //   const get = async () => {
+  //     try {
+  //       const { response, err } = await checkoutApi.getList({ user_id:user.id });
+  //       if (err) {
+  //         toast.error(err);
+  //       }
+  //       if (response) {
+  //         setListItem(response);
+  //       }
+  //     } catch (error) {
+  //       toast.error(error);
+  //     }
+  //   };
 
-    get();
+  //   get();
 
-  }, [user]);
+  // }, [user]);
 
   return (
     <>

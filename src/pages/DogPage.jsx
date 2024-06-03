@@ -25,11 +25,26 @@ import GridList from "../components/GridList";
 import dogApi from "../apis/modules/dog.api";
 import { toast } from "react-toastify";
 import CircularProgress from "@mui/material/CircularProgress";
+import { filter } from "lodash";
+import { Alert, Paper } from "@mui/material";
+import { useGetAllPet } from "~/hooks/query/useDog";
+
+
+function applySortFilter(array, query) {
+  const stabilizedThis = array?.map((el, index) => [el, index]);
+  if (query) {
+    return filter(array, (_data) => _data.dogName?.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+  }
+  return stabilizedThis?.map((el) => el[0]);
+}
 
 const DogPage = () => {
   const [sort, setSort] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState([]);
+  const [filterName, setFilterName] = useState("");
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [data, setData] = useState([]);
+
+  const data = useGetAllPet({ type: "dog" });
 
   const handleSortChange = (e) => {
     setSort(e.target.value);
@@ -43,32 +58,40 @@ const DogPage = () => {
     }
   };
 
-  const getAllDog = async () => {
-    setIsLoading(true);
-    try {
-      const { response, err } = await dogApi.getAll();
-      if (response) {
-        setData(response);
-      }
-      if (err) {
-        toast.error(err);
-      }
-    } catch (error) {
-      toast.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const getAllDog = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const { response, err } = await dogApi.getAll({ type: "dog" });
+  //     if (response) {
+  //       setData(response);
+  //     }
+  //     if (err) {
+  //       toast.error(err);
+  //     }
+  //   } catch (error) {
+  //     toast.error(error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    getAllDog();
-  }, []);
+  // useEffect(() => {
+  //   getAllDog();
+  // }, []);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
   };
+
+  const handleFilterByName = (event) => {
+    setFilterName(event.target.value);
+  };
+
+  const filteredUsers = applySortFilter(data?.data, filterName);
+
+  const isNotFound = !filteredUsers?.length && !!filterName;
 
   return (
     <Helmet title="Chó cảnh">
@@ -145,6 +168,8 @@ const DogPage = () => {
                 }}
               >
                 <TextField fullWidth label="Tìm kiếm" id="search"
+                  value={filterName}
+                  onChange={handleFilterByName}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -179,13 +204,34 @@ const DogPage = () => {
             </Stack>
             <Box padding={5}>
               {
-                isLoading && <Box sx={{ display: "flex", marginLeft:"200px" }}>
+                data?.isLoading && <Box sx={{ display: "flex", alignItems:"center", justifyContent:"center", mt:"200px" }}>
                   <CircularProgress size={100}/>
                 </Box>
               }
               {
-                data.length > 0 && <GridList data={data} />
+                data.error instanceof Error && <Box sx={{ marginTop: 2 }}>
+                  <Alert severity="error" variant="outlined" >{data.error.message}</Alert>
+                </Box>
               }
+              {
+                data.isSuccess && data?.data.length > 0 && <GridList data={filteredUsers} />
+              }
+              {isNotFound && (
+                <Paper
+                  sx={{
+                    textAlign: "center"
+                  }}
+                >
+                  <Typography variant="h6" paragraph>
+                    Not found
+                  </Typography>
+                  <Typography variant="body2">
+                    No results found for &nbsp;
+                    <strong>&quot;{filterName}&quot;</strong>.
+                    <br /> Try checking for typos or using complete words.
+                  </Typography>
+                </Paper>
+              )}
             </Box>
           </Box>
         </Stack>

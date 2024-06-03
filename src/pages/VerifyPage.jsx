@@ -1,6 +1,4 @@
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Alert from "@mui/material/Alert";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
@@ -10,14 +8,14 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Logo from "../components/Logo";
 import PetsIcon from "@mui/icons-material/Pets";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadingButton } from "@mui/lab";
 import { toast } from "react-toastify";
-import { VerifyToken } from "../configs/zod.config.js";
+import { VerifyToken } from "~/configs/zod.config.js";
 import userApi from "../apis/modules/user.api";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link as LinkRoute, useNavigate } from "react-router-dom";
+import { ZodError } from "zod";
+import OTPInput from "react-otp-input";
 
 function Copyright(props) {
   return (
@@ -36,27 +34,34 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function VerifyPage() {
+  const [otp, setOtp] = useState("");
+  const [isVerify, setIsVerify] = useState(false);
   const navigate = useNavigate();
 
-  const [isLoginRequest, setIsLoginRequest] = useState(false);
-  const [errorMessage, setErrorMessage] = useState();
-  const {
-    register,
-    formState: { errors, touchedFields },
-    handleSubmit
-  } = useForm({ resolver: zodResolver(VerifyToken) });
+  const handlePaste= (event) => {
+    event.clipboardData.getData("text");
+  };
 
 
-  const onHandleSubmit = async (data) => {
-    setErrorMessage(undefined);
-    setIsLoginRequest(true);
-    const { response, err } = await userApi.verify(data);
-    setIsLoginRequest(false);
+  const handleVerify = async () => {
+    setIsVerify(true);
+    try {
+      VerifyToken.parse({ token: otp });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        setIsVerify(false);
+        toast.error(error.issues[0].message);
+        return;
+      }
+    }
+    const { response, err } = await userApi.verify(otp);
+    setIsVerify(false);
     if (response) {
-      toast.success("Xác thực tài khoản thành công mời đăng nhập");
+      toast.success("Xác nhận thành công! Vui lòng đăng nhập");
+      navigate("/login");
     }
     if (err) {
-      setErrorMessage(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -86,43 +91,38 @@ export default function VerifyPage() {
           <Typography component="h1" variant="h5" fontWeight="bold" marginBottom={3}>
             XÁC NHẬN TÀI KHOẢN
           </Typography>
-          <Box component="form" onSubmit={handleSubmit(onHandleSubmit)}>
-            <Stack spacing={3}>
-              <TextField
-                {
-                  ...register("token")
-                }
-                type="text"
-                label="Token xác nhận"
-                name="token"
-                fullWidth
-                sx={{ width:"400px" }}
-                error={touchedFields && errors?.token?.message !== undefined}
-                helperText={touchedFields && errors?.token?.message}
+          <Box>
+            <Stack gap={3}>
+              <OTPInput
+                value={otp}
+                onChange={setOtp}
+                numInputs={8}
+                renderSeparator={<span>-</span>}
+                renderInput={(props) => <input {...props} />}
+                onPaste={handlePaste}
+                shouldAutoFocus
+                containerStyle={{
+                  gap: "10px"
+                }}
+                inputStyle={{
+                  width: "3rem",
+                  height: "3rem",
+                  fontSize: "2rem",
+                  borderRadius: "4px",
+                  border: "1px solid rgba(0, 0, 0, .3)"
+                }}
               />
-              <LoadingButton
-                type="submit"
-                fullWidth
-                size="large"
-                variant="contained"
-                sx={{ marginTop: 4 }}
-                loading={isLoginRequest}
-              >
-                Xác nhận tài khoản
-              </LoadingButton>
-            </Stack>
-            <Button
-              fullWidth
-              sx={{ marginTop: 1 }}
-              onClick={() => navigate("/login")}
-            >
-              Đăng nhập
-            </Button>
-            {errorMessage && (
-              <Box sx={{ marginTop: 2 }}>
-                <Alert severity="error" variant="outlined" >{errorMessage}</Alert>
+              <Box sx={{ justifyContent:"space-between", display:"flex", alignItems:"center" }}>
+                <Button variant="outlined" color="error"
+                  onClick={() => setOtp("")}
+                >Xóa tất cả</Button>
+                <LoadingButton type="submit" variant="contained" onClick={handleVerify}
+                  loading={isVerify}
+                >
+        Xác nhận mã
+                </LoadingButton>
               </Box>
-            )}
+            </Stack>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />

@@ -15,6 +15,7 @@ import menuConfigs from "../configs/menu.config.js";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import { toast } from "react-toastify";
 import { createShipInfo } from "~/redux/features/cartSlice";
+import { Avatar } from "@mui/material";
 
 
 const UserMenu = () => {
@@ -43,7 +44,9 @@ const UserMenu = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Tài khoản">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <TextAvatar text={user?.username}/>
+                {
+                  user?.avatarUrl ? <Avatar src={user.avatarUrl} /> : <TextAvatar text={user?.username} />
+                }
                 <Typography sx={{ marginLeft: "5px", fontSize:"0.875rem", display:{ xs:"none", sm:"block" } }}>{user?.username}</Typography>
               </IconButton>
             </Tooltip>

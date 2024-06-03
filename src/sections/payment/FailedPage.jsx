@@ -13,7 +13,7 @@ function FailedPage() {
           <Box sx={{ textAlign: "center", px: "12px" }}>
             <Typography>Đơn hàng đã bị hủy vì quý khách đã hủy giao dịch</Typography>
             <Typography>Quý khách vui lòng thực hiện lại mua hàng và thanh toán</Typography>
-            <Typography>Chân thành cảm ơn quý khách đã tin tưởng TuliBear</Typography>
+            <Typography>Chân thành cảm ơn quý khách đã tin tưởng Petshop</Typography>
             <Link to="/order">
               <Button variant="contained" sx={{ marginTop:"20px" }}>Thanh toán lại</Button>
             </Link>

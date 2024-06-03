@@ -4,7 +4,6 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import MyAccount from "./MyAccount";
 import ChangePassword from "./ChangePassword";
-import { useSelector } from "react-redux";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import LockResetIcon from "@mui/icons-material/LockReset";
 
@@ -21,7 +20,6 @@ export default function ProfileView() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const { user } = useSelector(state => state.user);
 
 
   return (
@@ -36,7 +34,7 @@ export default function ProfileView() {
           />
         </Tabs>
       </Box>
-      <MyAccount value={value} index={0} user={user}/>
+      <MyAccount value={value} index={0}/>
 
       <ChangePassword value={value} index={1} />
     </Box>

@@ -5,11 +5,12 @@ import privateClient from "../client/private.client.js";
 const userEndpoints = {
   signin: "Authenticate/login",
   signup: "Authenticate/register",
-  verify: ({ token }) => `Authenticate/verify/${token}`,
+  verify: (token) => `Authenticate/verify/${token}`,
   changePassword: "Authenticate/change-password",
   forgotPassword: ({ email }) => `Authenticate/forgot-password?email=${email}`,
   resetPassword: "Authenticate/reset-password",
-  getInfo: "Authenticate/info"
+  getInfo: "Authenticate/info",
+  editInfo: "Authenticate/edit-info"
 };
 
 const userApi = {
@@ -31,10 +32,10 @@ const userApi = {
       return { response };
     } catch (err) { return { err }; }
   },
-  verify: async ({ token }) => {
+  verify: async (token) => {
     try {
       const response = await publicClient.post(
-        userEndpoints.verify({ token })
+        userEndpoints.verify(token)
       );
       return { response };
     } catch (err) { return { err }; }
@@ -68,6 +69,14 @@ const userApi = {
   getInfo: async () => {
     try {
       const response = await privateClient.get(userEndpoints.getInfo);
+      return { response };
+    } catch (err) {return { err };}
+  },
+  editInfo: async ({ id, firstName, lastName, phoneNumber, avatarUrl }) => {
+    try {
+      const response = await privateClient.post(userEndpoints.editInfo, {
+        id, firstName, lastName, phoneNumber, avatarUrl
+      });
       return { response };
     } catch (err) {return { err };}
   }

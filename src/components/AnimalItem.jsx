@@ -27,7 +27,7 @@ const AnimalItem = ({ item }) => {
       toast.error("Bạn phải đăng nhập để thực hiện chức năng này!");
     }
     else {
-      const exist = findProductByIdAndType(cartItems, item.id, "animal");
+      const exist = findProductByIdAndType(cartItems, item.dogItemId, "animal");
       if (exist) {
         toast.error("Sản phẩm đã có trong giỏ hàng");
         return;

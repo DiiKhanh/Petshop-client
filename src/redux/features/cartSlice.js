@@ -15,7 +15,7 @@ const cartSlice = createSlice({
       const newItem = action.payload;
       const existingItem = state.cartItems?.find(
         (item) => {
-          return item.id === newItem.id;
+          return item.id === newItem.id && item.type === newItem.type;
         }
       );
       if (!existingItem) {
@@ -42,7 +42,7 @@ const cartSlice = createSlice({
       if (type === "animal") {
         const existingItem = state.cartItems?.find((item) => item.id === id);
         if (existingItem) {
-          state.cartItems = state.cartItems?.filter((item) => item.id !== id);
+          state.cartItems = state.cartItems?.filter((item) => item.id !== id && item.type !== type);
           state.totalQuantity = state.totalQuantity - existingItem.quantity;
         }
         state.totalAmount = state.cartItems?.reduce(
@@ -71,7 +71,12 @@ const cartSlice = createSlice({
       state.shipInfo = action.payload;
     },
     setTotalAmount: (state, action) => {
-      state.totalAmount = state.totalAmount - action.payload;
+      const temp = state.totalAmount - action.payload;
+      if (temp < 0) {
+        state.totalAmount = 0;
+      } else {
+        state.totalAmount = temp;
+      }
     },
     updateItem: (state, action) => {
       const newItem = action.payload;

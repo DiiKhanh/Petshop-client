@@ -8,7 +8,7 @@ const ComicGrid = () => {
     <NavigationSwiper>
       {products?.map((item, index) => (
         <SwiperSlide key={index}>
-          <BredItem item={item} />
+          <BredItem item={item} type="product"/>
         </SwiperSlide>
       ))}
     </NavigationSwiper>

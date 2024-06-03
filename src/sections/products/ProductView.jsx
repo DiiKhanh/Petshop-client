@@ -12,6 +12,17 @@ import InputAdornment from "@mui/material/InputAdornment";
 import ProductCard from "./ProductCard";
 import ProductSort from "./ProductSort";
 // import ProductFilters from "./ProductFilters";
+import { filter } from "lodash";
+import { Paper } from "@mui/material";
+import { useState } from "react";
+
+function applySortFilter(array, query) {
+  const stabilizedThis = array?.map((el, index) => [el, index]);
+  if (query) {
+    return filter(array, (_data) => _data.itemName?.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+  }
+  return stabilizedThis?.map((el) => el[0]);
+}
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +36,14 @@ export default function ProductsView({ products }) {
   // const handleCloseFilter = () => {
   //   setOpenFilter(false);
   // };
+  const [filterName, setFilterName] = useState("");
+  const handleFilterByName = (event) => {
+    setFilterName(event.target.value);
+  };
+
+  const filteredUsers = applySortFilter(products, filterName);
+
+  const isNotFound = !filteredUsers?.length && !!filterName;
 
   return (
     <Container>
@@ -49,6 +68,8 @@ export default function ProductsView({ products }) {
           }}
         >
           <TextField fullWidth label="Tìm kiếm" id="search"
+            value={filterName}
+            onChange={handleFilterByName}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -69,12 +90,30 @@ export default function ProductsView({ products }) {
       </Stack>
 
       <Grid container spacing={3}>
-        {products.map((product) => (
+        {filteredUsers.map((product) => (
           <Grid key={product.dogProductItemId} xs={12} sm={6} md={3}>
             <ProductCard product={product} />
           </Grid>
         ))}
       </Grid>
+      {isNotFound && (
+
+        <Paper
+          sx={{
+            textAlign: "center"
+          }}
+        >
+          <Typography variant="h6" paragraph>
+Not found
+          </Typography>
+          <Typography variant="body2">
+No results found for &nbsp;
+            <strong>&quot;{filterName}&quot;</strong>.
+            <br /> Try checking for typos or using complete words.
+          </Typography>
+        </Paper>
+
+      )}
     </Container>
   );
 }

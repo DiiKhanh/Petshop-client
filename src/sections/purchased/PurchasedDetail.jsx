@@ -29,6 +29,7 @@ import checkoutApi from "~/apis/modules/checkout.api";
 import { useDispatch } from "react-redux";
 import { setModalContact } from "~/redux/features/globalLoadingSlice";
 import commentApi from "~/apis/modules/comment.api";
+import { useGetPurchased } from "~/hooks/query/usePurchased";
 
 const ColorlibConnector = styled(StepConnector)(() => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -102,48 +103,54 @@ ColorlibStepIcon.propTypes = {
 const PurchasedDetail = () => {
   const { id } = useParams();
   const steps = ["Đang lấy hàng", "Đang giao", "Thành công"];
-  const [item, setItem] = useState();
-  const [data, setData] = useState([]);
+  // const [item, setItem] = useState();
+  // const [data, setData] = useState([]);
   const dispatch = useDispatch();
+  const item = useGetPurchased(id);
 
-  useEffect(() => {
-    const get = async () => {
-      try {
-        const { response, err } = await checkoutApi.getDetail({ id });
-        if (err) {
-          toast.error(err);
-        }
-        if (response) {
-          setItem(response);
-          setData(response.data);
-        }
-      } catch (error) {
-        toast.error(error);
-      }
-    };
-    get();
-  }, [id]);
+  // useEffect(() => {
+  //   const get = async () => {
+  //     try {
+  //       const { response, err } = await checkoutApi.getDetail({ id });
+  //       if (err) {
+  //         toast.error(err);
+  //       }
+  //       if (response) {
+  //         setItem(response);
+  //         setData(response.data);
+  //       }
+  //     } catch (error) {
+  //       toast.error(error);
+  //     }
+  //   };
+  //   get();
+  // }, [id]);
+  console.log(item?.data);
 
   return (
+
+    <>
+      {
+        item.isSuccess && item?.data &&
     <Helmet title={`purchased ${id}`}>
       <Container maxWidth="lg" sx={{ marginY: "8rem" }}>
         <Stack marginY={1} bgcolor="#fff">
           <Box display="flex" justifyContent="space-between" alignItems="center" p={2}>
-            <Typography>Mã hóa đơn: {item?.id}</Typography>
+            <Typography>Mã hóa đơn: {item?.data.id}</Typography>
             <Box display="flex">
               {
-                item?.status === "Thành công" && <Typography marginX="4px" color="green">Đơn hàng đã được giao thành công</Typography>
+                item?.data.status === "Thành công" && <Typography marginX="4px" color="green">Đơn hàng đã được giao thành công</Typography>
               }
               <Divider orientation="vertical" flexItem sx={{ marginX:1 }}/>
               <Typography textTransform="uppercase" fontWeight="bold" color="primary.price">
-                {item?.status}
+                {item?.data.status}
               </Typography>
             </Box>
           </Box>
           <Divider orientation="horizontal" />
           <Box my={5}>
             <Stepper alternativeLabel activeStep={
-              item?.status === "Thành công" ? 2 : item?.status === "Đang giao" ? 1 : 0
+              item?.data.status === "Thành công" ? 2 : item?.data.status === "Đang giao" ? 1 : 0
             } connector={<ColorlibConnector />}>
               {steps.map((label) => (
                 <Step key={label}>
@@ -157,24 +164,24 @@ const PurchasedDetail = () => {
             <Box flex={2}>
 
               {
-                item?.address && <Stack>
+                item?.data.address && <Stack>
                   <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
                     Thông tin người nhận
                   </Typography>
                   <ListItemText sx={{ display:"flex", alignItems:"center", gap: 2 }} primary="Họ tên:" secondary={<Typography>
-                    {item?.name}
+                    {item?.data.name}
                   </Typography>}
                   />
                   <ListItemText sx={{ display:"flex", alignItems:"center", gap: 2 }} primary="Địa chỉ:" secondary={<Typography>
-                    {item?.address}
+                    {item?.data.address}
                   </Typography>}
                   />
                   <ListItemText sx={{ display:"flex", alignItems:"center", gap: 2 }} primary="Số điện thoại:" secondary={<Typography>
-                    {item?.phoneNumber}
+                    {item?.data.phoneNumber}
                   </Typography>}
                   />
                   <ListItemText sx={{ display:"flex", alignItems:"center", gap: 2 }} primary="Email:" secondary={<Typography>
-                    {item?.email}
+                    {item?.data.email}
                   </Typography>}
                   />
                 </Stack>
@@ -189,10 +196,10 @@ const PurchasedDetail = () => {
                   variant="body2"
                   color="text.secondary"
                 >
-                  {item?.createAt !== item?.updatedAt && item && new Date(item?.updatedAt).toISOString().replace("T", " ").replace(/\.\d{3}Z/, "")}
+                  {item?.data.createAt !== item?.data.updatedAt && item && new Date(item?.data.updatedAt).toISOString().replace("T", " ").replace(/\.\d{3}Z/, "")}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
-                  <TimelineDot color={item?.status === "Thành công" ? "success" : "grey"} >
+                  <TimelineDot color={item?.data.status === "Thành công" ? "success" : "grey"} >
                     <LocalShippingIcon fontSize="small"/>
                   </TimelineDot>
                   <TimelineConnector />
@@ -206,10 +213,10 @@ const PurchasedDetail = () => {
                   variant="body2"
                   color="text.secondary"
                 >
-                  {item?.createAt !== item?.updatedAt && item && new Date(item?.updatedAt).toISOString().replace("T", " ").replace(/\.\d{3}Z/, "")}
+                  {item?.data.createAt !== item?.data.updatedAt && item && new Date(item?.data.updatedAt).toISOString().replace("T", " ").replace(/\.\d{3}Z/, "")}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
-                  <TimelineDot color={item?.status === "Đang giao hàng" || item?.status === "Thành công" ? "success" : "grey"} >
+                  <TimelineDot color={item?.data.status === "Đang giao hàng" || item?.data.status === "Thành công" ? "success" : "grey"} >
                     <LocalShippingIcon fontSize="small"/>
                   </TimelineDot>
                   <TimelineConnector />
@@ -223,7 +230,7 @@ const PurchasedDetail = () => {
                   variant="body2"
                   color="text.secondary"
                 >
-                  {item && new Date(item?.createAt).toISOString().replace("T", " ").replace(/\.\d{3}Z/, "")}
+                  {item && new Date(item?.data.createAt).toISOString().replace("T", " ").replace(/\.\d{3}Z/, "")}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                   <TimelineDot color="success" >
@@ -240,7 +247,7 @@ const PurchasedDetail = () => {
                   variant="body2"
                   color="text.secondary"
                 >
-                  {item && new Date(item?.createAt).toISOString().replace("T", " ").replace(/\.\d{3}Z/, "")}
+                  {item && new Date(item?.data.createAt).toISOString().replace("T", " ").replace(/\.\d{3}Z/, "")}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                   <TimelineDot sx={{ m: "auto 0" }} color="success">
@@ -254,9 +261,9 @@ const PurchasedDetail = () => {
           <Divider orientation="horizontal" />
           <List>
             {
-              data?.map(i =>
+              item?.data?.data.map(i =>
                 <Box key={i.name}>
-                  <Comment i={i} item={item}/>
+                  <Comment i={i} item={item.data}/>
                 </Box>
               )
             }
@@ -265,7 +272,7 @@ const PurchasedDetail = () => {
             <Box display="flex" alignItems="center" gap={1}>
               <Typography>Thành tiền:</Typography>
               <Typography component="p" color="primary.price" fontWeight="bold">
-                {valueLabelFormat(item?.total)}
+                {valueLabelFormat(item?.data.total)}
               </Typography>
             </Box>
             <Button variant="outlined" sx={{ color:"#333" }}
@@ -276,6 +283,8 @@ const PurchasedDetail = () => {
         </Stack>
       </Container>
     </Helmet>
+      }
+    </>
   );
 };
 

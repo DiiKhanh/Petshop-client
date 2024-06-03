@@ -46,7 +46,6 @@ export default function SignupPage() {
 
   const [isLoginRequest, setIsLoginRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
-  const [success, setSucces] = useState(false);
 
   const {
     register,
@@ -56,13 +55,20 @@ export default function SignupPage() {
   } = useForm({ resolver: zodResolver(SignUpSchema) });
 
   const onHandleSubmit = async (data) => {
+    const handleData = {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+      phoneNumber: data.phone,
+      firstName: data.first_name,
+      lastName: data.last_name
+    };
     setErrorMessage(undefined);
     setIsLoginRequest(true);
-    const { response, err } = await userApi.signup(data);
+    const { response, err } = await userApi.signup(handleData);
     setIsLoginRequest(false);
     if (response) {
       toast.success("Đăng ký tài khoản thành công mời bạn xác nhận!");
-      setSucces(true);
     }
     if (err) {
       setErrorMessage(err.message);
@@ -198,15 +204,6 @@ export default function SignupPage() {
               </FormGroup>
 
             </Stack>
-            {
-              success && <Button
-                fullWidth
-                sx={{ marginTop: 1 }}
-                onClick={() => navigate("/verify")}
-              >
-            Xác nhận tài khoản
-              </Button>
-            }
             <LoadingButton
               type="submit"
               fullWidth

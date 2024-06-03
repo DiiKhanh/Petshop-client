@@ -13,7 +13,10 @@ const HomePage = () => {
       <ContainerBox title="Giống chó cảnh">
         <BredSlide category="dogs"/>
       </ContainerBox>
-      <ContainerBox title="Đồ cho chó">
+      <ContainerBox title="Giống mèo cảnh">
+        <BredSlide category="cats"/>
+      </ContainerBox>
+      <ContainerBox title="Sản phẩm thú cưng">
         <ProductGridSlide />
       </ContainerBox>
       <ContainerBox title="Quyền lợi">
