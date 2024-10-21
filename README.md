@@ -2,16 +2,16 @@
 ## Official Link
 
 ## Technology
-- Material
+- Material UI
 - React
 - Redux Toolkit
 ## Features
 - Auth
-- Comment/review
+- Comment/Review
 - Responsive
 - Booking
 - Cart
-- payment online
+- Payment online
 - Purchased
 ## Screenshots
 ![Home](/demo/home1.png)
