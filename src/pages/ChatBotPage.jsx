@@ -18,7 +18,6 @@ const ChatGeminiResponse = (props) => {
 
   async function fetchDataFromGeminiProAPI() {
     try {
-      // ONLY TEXT
       if (!inputText) {
         alert("Please enter text!");
         return;
@@ -29,12 +28,10 @@ const ChatGeminiResponse = (props) => {
 
       const result = await model.generateContent(inputText);
       const text = result.response.text();
-      console.log(text);
       setLoading(false);
       setData(text);
     } catch (error) {
       setLoading(false);
-      console.error("fetchDataFromGeminiAPI error: ", error);
     }
   }
 
@@ -97,11 +94,6 @@ const ChatBotPage = () => {
         message: "Cửa hàng chúng tôi sẽ giao thú cưng cho bạn đến nới an toàn, thời gian từ 3 - 5 ngày và hoàn toàn miễn phí",
         trigger: "2"
       },
-      // {
-      //   id: "search",
-      //   user: true,
-      //   trigger: "7"
-      // },
       {
         id: "7",
         component: <ChatGeminiResponse />,

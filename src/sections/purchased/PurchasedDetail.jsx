@@ -23,9 +23,8 @@ import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import TimelineOppositeContent from "@mui/lab/TimelineOppositeContent";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import checkoutApi from "~/apis/modules/checkout.api";
 import { useDispatch } from "react-redux";
 import { setModalContact } from "~/redux/features/globalLoadingSlice";
 import commentApi from "~/apis/modules/comment.api";
@@ -125,7 +124,6 @@ const PurchasedDetail = () => {
   //   };
   //   get();
   // }, [id]);
-  console.log(item?.data);
 
   return (
 
